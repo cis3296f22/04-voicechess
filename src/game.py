@@ -11,15 +11,24 @@ class Game:
         self.dark_square_color = (0, 0, 255)
         self.light_square_color = (255, 255, 255)
         self.board: List['Square']
+        self.position = [
+            ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
+            ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+            ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
+            ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
+            ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
+            ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
+            ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+            ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],
+        ]
         self.running = True
 
-    def render(self):
-        pg.display.flip()
+
 
     def start(self):
         self.create_board()
         self.add_pieces()
-        self.render()
+        pg.display.flip()
         self.main()
         pass
 
@@ -36,26 +45,20 @@ class Game:
                 self.board[i].append(Square( i,j, pg.draw.rect(self.screen, color, [i * 75, j*75, 75, 75])))
         return self.board
 
+    
+    def print_position(self):
+        print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in self.position]))
+
     def add_pieces(self, pos=None):
         # TODO: position reading
         if pos:
             return
-        pos = [
-            "br", "bn", "bb", "bq", "bk", "bb", "bn", "br",
-            "bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp",
-            "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ",
-            "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ",
-            "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ",
-            "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ",
-            "wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp",
-            "wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr",
-        ]
 
         for i in range(8):
             for j in range(8):
-                if pos[(i * 8) + j] != "  ":
+                if self.position[i][j].strip():
                     self.board[j][i].set_piece(
-                        Piece.from_short_anotation( pos[(i * 8)+j], (j,i))
+                        Piece.from_short_anotation( self.position[i][j], (j,i))
                     )
         self.draw_pieces()
 
@@ -75,34 +78,50 @@ class Game:
                     self.screen.blit(img, (i*75,j*75))
 
     def main(self):
-        moving = False
         moving_piece = None
+        square_clicked = None
         while self.running:
             for ev in pg.event.get():
                 if ev.type == pg.QUIT:
                     self.running = False
+                    return
 
                 if ev.type == pg.MOUSEBUTTONDOWN:
+                    should_break = False
                     for i in range(8):
+                        if should_break:
+                            break
                         for j in range(8):
                             sqr = self.board[i][j]
                             if sqr.rect.collidepoint(ev.pos) and sqr.has_piece() :
+                                print("Piece clicked ", sqr.position)
                                 pg.draw.rect(self.screen, (255,0,0), sqr, 5)
-                                moving = True
                                 moving_piece = sqr.piece
+                                square_clicked = sqr
+                                should_break = True
                                 break
 
-                elif ev.type == pg.MOUSEBUTTONUP:
-                    moving = False
+                elif ev.type == pg.MOUSEBUTTONUP:                   
+                    should_break = False
+                    for i in range(8):
+                        if should_break:
+                            break
+                        for j in range(8):
+                            sqr = self.board[i][j]
+                            if sqr.rect.collidepoint(ev.pos) and moving_piece and square_clicked :
+                                print("square dropped ", sqr.position)
+                                self.position[i][j] = moving_piece.short_annotation
+                                (y,z) = square_clicked.position
+                                self.position[z][y] = "  "
+                                self.print_position()
+                                self.create_board()
+                                should_break = True
+
+                                break
                     moving_piece = None
-                    pass
-                
-                elif ev.type == pg.MOUSEMOTION and moving :
-                    moving_piece.rect.move_ip(ev.rel)
-            if moving and moving_piece:
-                self.screen.blit( moving_piece.blit_image , moving_piece.rect)
-            self.add_pieces()
-            pg.display.update()
+                # self.create_board()
+                self.add_pieces()
+                pg.display.flip()
             
            
             

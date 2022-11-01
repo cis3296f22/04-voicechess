@@ -14,6 +14,7 @@ class Square:
             return
         self.piece = piece
         self.containsPiece = True
+    
     def has_piece(self):
         return self.containsPiece
 
