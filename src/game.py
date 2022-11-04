@@ -110,7 +110,7 @@ class Game:
                             sqr = self.board[i][j]
                             if sqr.rect.collidepoint(ev.pos) and moving_piece and square_clicked :
                                 print("square dropped ", sqr.position)
-                                self.position[i][j] = moving_piece.short_annotation
+                                self.position[j][i] = moving_piece.short_annotation
                                 (y,z) = square_clicked.position
                                 self.position[z][y] = "  "
                                 self.print_position()
