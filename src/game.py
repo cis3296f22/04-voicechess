@@ -1,6 +1,6 @@
 from typing import List
 import pygame as pg
-from piece import Piece
+from piece import Piece, PieceType, PieceColor
 from square import Square
 
 
@@ -10,6 +10,7 @@ class Game:
         self.screen = pg.display.set_mode((800,600))
         self.dark_square_color = (0, 0, 255)
         self.light_square_color = (255, 255, 255)
+        self.turn = PieceColor.White
         self.board: List['Square']
         self.position = [
             ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
@@ -26,13 +27,18 @@ class Game:
 
 
     def start(self):
-        self.create_board()
+        self.draw_board()
         self.add_pieces()
         pg.display.flip()
         self.main()
         pass
 
-    def create_board(self):
+    def draw_board(self):
+        self.screen.fill((0,0,0))
+        font = pg.font.SysFont('Anonymous Pro', 24)
+        turn_str = "White's Turn" if self.turn == PieceColor.White else "Black's Turn" 
+        text = font.render(turn_str,False, (255,255,255))
+        self.screen.blit(text, (620,300))
         self.board = []
         for i in range(8):
             self.board.append([])
@@ -93,15 +99,22 @@ class Game:
                             break
                         for j in range(8):
                             sqr = self.board[i][j]
-                            if sqr.rect.collidepoint(ev.pos) and sqr.has_piece() :
-                                print("Piece clicked ", sqr.position)
-                                pg.draw.rect(self.screen, (255,0,0), sqr, 5)
+
+                            if sqr.rect.collidepoint(ev.pos) and sqr.has_piece() and sqr.piece.color == self.turn  :
+                                # pg.draw.rect(self.screen, (255,0,0), sqr, 5)
                                 moving_piece = sqr.piece
                                 square_clicked = sqr
                                 should_break = True
                                 break
+                elif ev.type == pg.MOUSEMOTION and moving_piece:
+                    moving_piece.rect.move_ip(ev.rel)
+                    self.draw_board()
+                    self.screen.blit(moving_piece.blit_image, moving_piece.rect)
 
-                elif ev.type == pg.MOUSEBUTTONUP:                   
+
+                elif ev.type == pg.MOUSEBUTTONUP:
+                    
+                                    
                     should_break = False
                     for i in range(8):
                         if should_break:
@@ -109,17 +122,15 @@ class Game:
                         for j in range(8):
                             sqr = self.board[i][j]
                             if sqr.rect.collidepoint(ev.pos) and moving_piece and square_clicked :
-                                print("square dropped ", sqr.position)
                                 self.position[j][i] = moving_piece.short_annotation
                                 (y,z) = square_clicked.position
                                 self.position[z][y] = "  "
-                                self.print_position()
-                                self.create_board()
                                 should_break = True
-
+                                self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
+                                self.draw_board()
                                 break
                     moving_piece = None
-                # self.create_board()
+                # self.draw_board()
                 self.add_pieces()
                 pg.display.flip()
             
