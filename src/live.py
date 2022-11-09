@@ -5,7 +5,7 @@ r = sr.Recognizer()
 
 with sr.Microphone() as source:
     print("Say something!")
-    audio = r.listen(source,phrase_time_limit=5)
+    audio = r.listen(source, phrase_time_limit=5)
 
 try:
     print(f'You said: "{r.recognize_google(audio)}"')

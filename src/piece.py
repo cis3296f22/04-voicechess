@@ -92,21 +92,21 @@ class Piece:
 
         if self.color == PieceColor.Black:
             all_posible = [( row, col +1)]
-            eat_moves = [ ( row +1, col -1), (row +1, col +1)]
+            eat_moves = [ ( row -1, col +1), (row +1, col +1)]
             if self.position[1] == 1:
                 all_posible.append((row , col +2))
 
         else:
             all_posible = [( row, col -1)]
-            eat_moves = [ ( row -1, col -1), (row -1, col +1)]
+            eat_moves = [ ( row +1, col -1), (row -1, col -1)]
             if self.position[1] == 6:
                 all_posible.append((row , col -2))
             
         for move in eat_moves:
             (r,c ) = move
-            sqr = board[r][c]
             if r not in range(0, 8) or c not in range(0, 8):
                 continue
+            sqr = board[r][c]
         
             if sqr.has_piece() and sqr.piece.color != self.color :
                 res.append( move)

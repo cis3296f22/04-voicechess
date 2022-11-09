@@ -27,7 +27,7 @@ Make a PR
 - To build you are going to need to have python installed
 - You are also going to need to install a couple of python packages which you can do with:
 ```bash
-pip install SpeechRecognition chess 
+pip install SpeechRecognition pygame 
 ```
 - The SpeechRecognition package provides the speech recognition 
 - The chess package allows us to create the chess board
