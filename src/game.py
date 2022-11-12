@@ -8,53 +8,48 @@ import speech_recognition as sr
 
 
 import re
-class Game:
-   
 
-    
-    def play_move(self, move:str):
-       
+
+class Game:
+
+    def play_move(self, move: str):
+
         matches = re.findall('[a-zA-Z][0-8]', move)
         if len(matches) != 2:
-            return(f"Don't Understand! You said '{move}'" )
+            return (f"Don't Understand! You said '{move}'")
 
-            
         alphabet = 'abcdefgh'
 
+        from_col = alphabet.index(matches[0][0].lower())
+        from_row = int(matches[0][1])
 
-        from_col = alphabet.index( matches[0][0].lower()) 
-        from_row = int(matches[0][1]) 
-
-        to_col = alphabet.index( matches[1][0].lower()) 
-        to_row = int(matches[1][1]) 
+        to_col = alphabet.index(matches[1][0].lower())
+        to_row = int(matches[1][1])
 
         from_square: Square = self.board[from_col][from_row]
         to_square: Square = self.board[to_col][to_row]
 
         if not from_square.has_piece():
-            return(f"THERE IS NO PIECE AT {matches[0]}")
+            return (f"THERE IS NO PIECE AT {matches[0]}")
 
         if to_square.position not in from_square.piece.possible_moves(self.board):
-            return(f"Piece on {matches[0]} can't move to {matches[1]}")
-        
+            return (f"Piece on {matches[0]} can't move to {matches[1]}")
+
         self.position[from_row][from_col] = "  "
         self.position[to_row][to_col] = from_square.piece.short_annotation
         self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
-        pg.mixer.music.play()
+        # pg.mixer.music.play()
 
-        
         self.add_pieces()
         self.draw_game()
         return f"Moved from {matches[0]} to {matches[1]} "
 
-        
-        
     def __init__(self):
         pg.init()
-        self.screen = pg.display.set_mode((800,600))
-        self.dark_square_color = (100,100,100)
+        self.screen = pg.display.set_mode((800, 600))
+        self.dark_square_color = (100, 100, 100)
         self.light_square_color = (255, 255, 255)
-       
+
         self.listeningResponse: str = "Not listening"
         self.turn = PieceColor.White
         self.listening = False
@@ -71,12 +66,29 @@ class Game:
         ]
         self.running = True
 
-
+    def speak_to_move(self):
+        r = sr.Recognizer()
+        mic = sr.Microphone()
+        
+        with mic as source:
+            r.adjust_for_ambient_noise(source)
+            audio = r.listen(source)
+            if ValueError:
+                print("Please say it again")
+                audio = r.listen(source)
+            result = r.recognize_google(audio)
+            commands = result.split()
+            del commands[3:]
+            print(commands)
+        
+        return commands
+    
     def start(self):
-        pg.mixer.music.load("sound.mp3")
+        # pg.mixer.music.load("sound.mp3")
         self.draw_game()
         self.add_pieces()
         pg.display.flip()
+
         self.main()
 
     def draw_game(self):
@@ -141,6 +153,8 @@ class Game:
     def main(self):
         moving_piece = None
         while self.running:
+            result = self.speak_to_move()
+            
             for ev in pg.event.get():
                 if ev.type == pg.QUIT:
                     self.running = False
@@ -187,7 +201,7 @@ class Game:
                                 (y,z) = moving_piece.position
                                 self.position[z][y] = "  "
                                 
-                                pg.mixer.music.play()
+                                #pg.mixer.music.play()
                                 should_break = True
                                 self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
                                 self.draw_game()
