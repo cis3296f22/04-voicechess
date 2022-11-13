@@ -1,5 +1,5 @@
 import speech_recognition as sr
-test = ["A5", "to", "too", "2", "B6"]
+test = ["A5", "to", "too", "2", "top", "B6"]
 
 def speak_to_move():
         r = sr.Recognizer()
@@ -18,18 +18,18 @@ def speak_to_move():
             del commands[3:]
 
             for i in range(3):
-                if is_legal(commands[i]) == True:
+                if is_legal(commands[i - 1]) == True:
                     print("this is right")
                     continue
                 else:
-                    print("command is wrong")
-                    return 0
+                    print("Command is wrong. Please provide another command.")
+                    speak_to_move()
             
             print(commands)
 
 def is_legal(command):
-    for i in range(5):
-        if command == test[i]:
+    for i in range(6):
+        if command == test[i-1]:
             return True
     return False
 
