@@ -5,7 +5,7 @@ import pygame as pg
 from piece import Piece, PieceColor
 from square import Square
 import speech_recognition as sr
-
+from speech import speak_to_move
 
 import re
 
@@ -66,23 +66,6 @@ class Game:
         ]
         self.running = True
 
-    def speak_to_move(self):
-        r = sr.Recognizer()
-        mic = sr.Microphone()
-        
-        with mic as source:
-            r.adjust_for_ambient_noise(source)
-            audio = r.listen(source)
-            if ValueError:
-                print("Please say it again")
-                audio = r.listen(source)
-            result = r.recognize_google(audio)
-            commands = result.split()
-            del commands[3:]
-            print(commands)
-        
-        return commands
-    
     def start(self):
         # pg.mixer.music.load("sound.mp3")
         self.draw_game()
@@ -154,7 +137,9 @@ class Game:
         moving_piece = None
         while self.running:
             result = self.speak_to_move()
-            
+            if result == False:
+                print("command unrecognized. Please give new command")
+
             for ev in pg.event.get():
                 if ev.type == pg.QUIT:
                     self.running = False
