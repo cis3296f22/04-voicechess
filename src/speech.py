@@ -8,7 +8,7 @@ chess_positions = ["A1","A2","A3","A4","A5","A6","A7","A8",
                     "F1","F2","F3","F4","F5","F6","F7","F8",
                     "G1","G2","G3","G4","G5","G6","G7","G8",
                     "H1","H2","H3","H4","H5","H6","H7","H8",
-                    "to", "To", "too", "Too", "2"]
+                    "to", "To", "too", "Too", "2", "top"]
 
 def speak_to_move():
         r = sr.Recognizer()
@@ -25,7 +25,7 @@ def speak_to_move():
             del commands[3:]
             print(commands)
             for i in range(3):
-                if is_legal(commands[i]) == True:
+                if is_legal(commands[i-1]) == True:
                     continue
                 else:
                     return False
@@ -34,8 +34,8 @@ def speak_to_move():
     
 
 def is_legal(command):
-    for i in range(69):
-        if command == chess_positions[i]:
+    for i in range(70):
+        if command == chess_positions[i-1]:
             return True
     return False
     
