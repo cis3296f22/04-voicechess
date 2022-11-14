@@ -1,28 +1,34 @@
-# Project Name
-Put here a short paragraph describing your project. 
-Adding an screenshot or a mockup of your application in action would be nice.  
+# Chess With Voice Recognition
+ This is a simple chess game that can be played with one’s voice. For example, looking at the two images provided below a player will be able to say g1 – f3. This will select the knight located at g1 and move it to f3. Then the opponent will let the application know they are ready to do their turn and tell which piece to move and where to move it.
 
-![This is a screenshot.](images.png)
+![Chess Board](output/board.svg)
+# Project Structure
+- the `documents` folder will contain all the documents required for assigments: project proposal, Vision paper, Personas paper
+- the `src` folder will contain all the code
+- the `output` folder will contain output from the code
+- the `audios` folder will contain audios used for testing
+
+
 # How to run
-Provide here instructions on how to use your application.   
-- Download the latest binary from the Release section on the right on GitHub.  
-- On the command line uncompress using
+To run the project simply clone the project:
+```bash
+git clone https://github.com/cis3296f22/04-voicechess
 ```
-tar -xzf  
-```
-- On the command line run with
-```
-./hello
-```
-- You will see Hello World! on your terminal. 
+And then you can run a couple of executables:
+1. `create_chess_board` with `python src/create_chess_board.py` this simply
+creates a svg image of a chess board and puts it into the output folder
+2. `live` with `python src/live.py` this is going to record your mic for about 5 secs and translate what you've said
+3. `fromaudio` with `python src/fromaudio.py` same as before but it takes an audio file instead of using the mic
 
 # How to contribute
-Follow this project board to know the latest status of the project: [http://...]([http://...])  
+Make a PR
 
-### How to build
-- Use this github repository: ... 
-- Specify what branch to use for a more stable release or for cutting edge development.  
-- Use InteliJ 11
-- Specify additional library to download if needed 
-- What file and target to compile and run. 
-- What is expected to happen when the app start. 
+# How to build
+- To build you are going to need to have python installed
+- You are also going to need to install a couple of python packages which you can do with:
+```bash
+pip install SpeechRecognition pygame 
+```
+- The SpeechRecognition package provides the speech recognition 
+- The chess package allows us to create the chess board
+
