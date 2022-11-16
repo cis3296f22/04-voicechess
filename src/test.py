@@ -9,7 +9,7 @@ def test_inital_pawn_moves():
     board: List['square.Square']
     position = [
         ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
-        ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+        ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],  # testing bp moves at (1, 1)
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
@@ -44,12 +44,12 @@ def test_pawn_can_eat_move():
     board: List['square.Square']
     position = [
         ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
-        ["bp", "bp", " ", "bp", "bp", "bp", "bp", "bp"],
+        ["bp", "bp", "  ", "bp", "bp", "bp", "bp", "bp"],
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
         ["  ", "  ", "bp", "  ", "  ", "  ", "  ", "  "],
-        ["  ", "wp", "  ", "  ", "  ", "  ", "  ", "  "],
+        ["  ", "wp", "  ", "  ", "  ", "  ", "  ", "  "],  # testing wp moves at (1, 4)
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
-        ["wp", " ", "wp", "wp", "wp", "wp", "wp", "wp"],
+        ["wp", "  ", "wp", "wp", "wp", "wp", "wp", "wp"],
         ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],
     ]
     board = [["  " for _ in range(8)] for _ in range(8)]
@@ -78,13 +78,13 @@ def test_rook_moves():
     board: List['square.Square']
     position = [
         ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
-        ["bp", "bp", " ", "bp", "bp", "bp", "bp", "bp"],
+        ["bp", "bp", "  ", "bp", "bp", "bp", "bp", "bp"],
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
         ["  ", "  ", "bp", "  ", "  ", "  ", "  ", "  "],
         ["  ", "wp", "  ", "  ", "  ", "  ", "  ", "  "],
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
-        ["wp", " ", "wp", "wp", "wp", "wp", "wp", "  "],
-        ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],
+        ["wp", "  ", "wp", "wp", "wp", "wp", "wp", "  "],
+        ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],  # testing wr moves at (7, 7)
     ]
     board = [["  " for _ in range(8)] for _ in range(8)]
     for i in range(8):
@@ -115,12 +115,12 @@ def test_knight_moves():
     board: List['square.Square']
     position = [
         ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
-        ["bp", "bp", " ", "bp", "bp", "  ", "bp", "bp"],
-        ["  ", "  ", "  ", "  ", "  ", "bp ", "  ", "  "],
+        ["bp", "bp", "  ", "bp", "bp", "  ", "bp", "bp"],
+        ["  ", "  ", "  ", "  ", "  ", "bp", "  ", "  "],
         ["  ", "  ", "bp", "  ", "  ", "  ", "  ", "  "],
-        ["  ", "wp", "  ", "  ", "  ", "  ", "wn", "  "],
+        ["  ", "wp", "  ", "  ", "  ", "  ", "wn", "  "],  # testing moves of wn at (6, 4)
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
-        ["wp", " ", "wp", "wp", "wp", "wp", "wp", "  "],
+        ["wp", "  ", "wp", "wp", "wp", "wp", "wp", "  "],
         ["wr", "wn", "wb", "wq", "wk", "wb", "  ", "wr"],
     ]
     board = [["  " for _ in range(8)] for _ in range(8)]
@@ -153,7 +153,7 @@ def test_bishop_moves():
         ["br", "bn", "  ", "bq", "bk", "bb", "bn", "br"],
         ["bp", "bp", "  ", "  ", "bp", "  ", "bp", "bp"],
         ["  ", "  ", "  ", "bp", "  ", "bp", "  ", "  "],
-        ["  ", "  ", "bp", "  ", "  ", "bb", "  ", "  "],
+        ["  ", "  ", "bp", "  ", "  ", "bb", "  ", "  "],  # testing moves of bb at (5,3)
         ["  ", "wp", "  ", "  ", "  ", "  ", "wn", "  "],
         ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
         ["wp", "  ", "wp", "wp", "wp", "wp", "wp", "  "],
@@ -182,7 +182,77 @@ def test_bishop_moves():
     # Check possible moves for black bishop located at (5,3)
     assert set(p.possible_moves(board)) == set(expectedAnswer)
 
+def test_king_moves():
+    # Set up board
+    board: List['square.Square']
+    position = [
+        ["br", "bn", "  ", "bq", "bk", "bb", "bn", "br"],
+        ["bp", "bp", "  ", "  ", "bp", "  ", "bp", "bp"],
+        ["  ", "  ", "  ", "bp", "  ", "bp", "  ", "  "],
+        ["  ", "  ", "bp", "  ", "  ", "bb", "  ", "  "],
+        ["  ", "wp", "  ", "  ", "wp", "  ", "wn", "  "],
+        ["  ", "  ", "  ", "  ", "wk", "  ", "  ", "  "],  # testing moves of wk at (4,5)
+        ["wp", "  ", "wp", "wp", "  ", "wp", "wp", "  "],
+        ["wr", "wn", "wb", "wq", "  ", "wb", "  ", "wr"],
+    ]
+    board = [["  " for _ in range(8)] for _ in range(8)]
+    for i in range(8):
+        for j in range(8):
+            board[i][j] = square.Square(i, j)
 
+    for i in range(8):
+        for j in range(8):
+            if position[i][j].strip():
+                board[j][i].set_piece(
+                    piece.Piece.from_short_anotation(position[i][j], (j, i))
+                )
+
+    # Set up piece to move
+    p = piece.Piece(color=piece.PieceColor.White, piece_type=piece.PieceType.King, position=(4, 5))
+
+    # Black bishop moves diagonally
+    # can_eat
+    # can_move (5, 5), (3, 5), (5, 6), (5, 3), (4, 4)
+    expectedAnswer = [(3, 4), (3, 5), (4, 6), (5, 5), (5, 4)]
+
+    # Check possible moves for white king located at (4,5)
+    assert set(p.possible_moves(board)) == set(expectedAnswer)
+
+def test_queen_moves():
+    # Set up board
+    board: List['square.Square']
+    position = [
+        ["br", "bn", "  ", "  ", "bk", "bb", "bn", "br"],
+        ["bp", "bp", "  ", "  ", "bp", "  ", "bp", "bp"],
+        ["  ", "  ", "  ", "bp", "  ", "bp", "  ", "  "],
+        ["  ", "  ", "bp", "bq", "  ", "bb", "  ", "  "],  # testing moves of bq at (3,3)
+        ["  ", "wp", "  ", "  ", "wp", "  ", "wn", "  "],
+        ["  ", "  ", "  ", "  ", "wk", "  ", "  ", "  "],
+        ["wp", "  ", "wp", "wp", "  ", "wp", "wp", "  "],
+        ["wr", "wn", "wb", "wq", "  ", "wb", "  ", "wr"],
+    ]
+    board = [["  " for _ in range(8)] for _ in range(8)]
+    for i in range(8):
+        for j in range(8):
+            board[i][j] = square.Square(i, j)
+
+    for i in range(8):
+        for j in range(8):
+            if position[i][j].strip():
+                board[j][i].set_piece(
+                    piece.Piece.from_short_anotation(position[i][j], (j, i))
+                )
+
+    # Set up piece to move
+    p = piece.Piece(color=piece.PieceColor.Black, piece_type=piece.PieceType.Queen, position=(3, 3))
+
+    # Black queen moves diagonally + vertically + horizontally
+    # can_eat (4, 4), (0, 6), (3, 6)
+    # can_move (5, 1), (2, 2), (4, 2), (4, 3), (2, 4), (3, 4), (1, 5), (3, 5)
+    expectedAnswer = [(4, 4), (0, 6), (3, 6), (5, 1), (2, 2), (4, 2), (4, 3), (2, 4), (3, 4), (1, 5), (3, 5)]
+
+    # Check possible moves for black queen located at (3,3)
+    assert set(p.possible_moves(board)) == set(expectedAnswer)
 
 if __name__ == '__main__':
     unittest.main()
