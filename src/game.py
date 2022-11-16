@@ -4,23 +4,19 @@ from typing import List
 import pygame as pg
 from piece import Piece, PieceColor
 from square import Square
+
 import speech_recognition as sr
 
 
 import re
 class Game:
-   
-
-    
     def play_move(self, move:str):
        
         matches = re.findall('[a-zA-Z][0-8]', move)
         if len(matches) != 2:
             return(f"Don't Understand! You said '{move}'" )
-
             
         alphabet = 'abcdefgh'
-
 
         from_col = alphabet.index( matches[0][0].lower()) 
         from_row = int(matches[0][1]) 
@@ -85,16 +81,16 @@ class Game:
         
 
         # RENDERS TURN TEXT
-        font = pg.font.SysFont('Monospace', 24)
-        turn_str = "White's Turn" if self.turn == PieceColor.White else "Black's Turn" 
-        text = font.render(turn_str,False, (255,255,255))
-        self.screen.blit(text, (620,300))
+        #font = pg.font.SysFont('Monospace', 24)
+        #turn_str = "White's Turn" if self.turn == PieceColor.White else "Black's Turn"
+        #text = font.render(turn_str,False, (255,255,255))
+        #self.screen.blit(text, (620,300))
 
 
         # RENDERS LISTENING TEXT
         turn_str = self.listeningResponse 
-        text = font.render(turn_str,False, (0,255,0))
-        self.screen.blit(text, (610,500))
+        #text = font.render(turn_str,False, (0,255,0))
+        #self.screen.blit(text, (610,500))
 
 
         self.board = [[ "  " for _ in range(8) ] for _ in range(8)]
@@ -196,6 +192,6 @@ class Game:
                 self.add_pieces()
                 pg.display.flip()
             
-           
+
             
             
