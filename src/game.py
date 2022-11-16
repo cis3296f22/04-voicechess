@@ -5,13 +5,12 @@ import pygame as pg
 from piece import Piece, PieceColor
 from square import Square
 import speech_recognition as sr
+import button
 
 
 import re
 class Game:
-   
 
-    
     def play_move(self, move:str):
        
         matches = re.findall('[a-zA-Z][0-8]', move)
@@ -70,6 +69,9 @@ class Game:
             ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],
         ]
         self.running = True
+        self.record_img = pg.image.load('images/button/rec.png').convert_alpha()
+        self.record_button = button.Button(650, 400, self.record_img, 0.2)
+        self.recording = False
 
 
     def start(self):
@@ -141,6 +143,12 @@ class Game:
     def main(self):
         moving_piece = None
         while self.running:
+            if self.record_button.draw(self.screen):
+                self.recording = True
+                print("Listening")
+                self.listeningResponse = "recording"
+                self.draw_game()
+
             for ev in pg.event.get():
                 if ev.type == pg.QUIT:
                     self.running = False
