@@ -214,7 +214,7 @@ def test_king_moves():
     # Set up piece to move
     moving_piece = piece.Piece(color=piece.PieceColor.White, piece_type=piece.PieceType.King, position=(4, 5))
 
-    # White king moves diagonally
+    # White king moves one step in all directions
     # can_eat
     # can_move (5, 5), (3, 5), (5, 6), (5, 3), (4, 4)
     expected_answer = [(3, 4), (3, 5), (4, 6), (5, 5), (5, 4)]
