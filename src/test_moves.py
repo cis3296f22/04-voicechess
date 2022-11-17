@@ -106,7 +106,7 @@ def test_rook_moves():
     # White rook moves either vertically or horizontally until it faces an obstacle
     # can_eat (7, 1)
     # can_move (7, 6), (7, 5), (7, 4), (7, 3), (7, 2)
-    expected_answer = [(7, 6), (7, 5), (7, 4), (7, 3), (7, 2), (7, 1)]
+    expected_answer = [ (7, 1), (7, 6), (7, 5), (7, 4), (7, 3), (7, 2)]
 
     # Check possible moves for white rook located at (7,7)
     assert set(moving_piece.possible_moves(board)) == set(expected_answer)
@@ -216,7 +216,7 @@ def test_king_moves():
 
     # White king moves one step in all directions
     # can_eat
-    # can_move (5, 5), (3, 5), (5, 6), (5, 3), (4, 4)
+    # can_move (3, 4), (3, 5), (4, 6), (5, 5), (5, 4)
     expected_answer = [(3, 4), (3, 5), (4, 6), (5, 5), (5, 4)]
 
     # Check possible moves for white king located at (4,5)
