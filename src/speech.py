@@ -7,9 +7,8 @@ chess_positions = ["A1","A2","A3","A4","A5","A6","A7","A8",
                     "E1","E2","E3","E4","E5","E6","E7","E8",
                     "F1","F2","F3","F4","F5","F6","F7","F8",
                     "G1","G2","G3","G4","G5","G6","G7","G8",
-                    "H1","H2","H3","H4","H5","H6","H7","H8"]
-
-chess_move = ["to", "To", "too", "Too", "2", "top"]
+                    "H1","H2","H3","H4","H5","H6","H7","H8",
+                    "to", "To", "too", "Too", "2", "top"]
 
 def speak_to_move():
         r = sr.Recognizer()
@@ -22,31 +21,24 @@ def speak_to_move():
                 print("Please say it again")
                 audio = r.listen(source)
             result = r.recognize_google(audio)
+            
+            print(result)
             commands = result.split()
-            del commands[3:]
+            
             print(commands)
-
-            if is_legal_position(commands[1]) == False:
-                return False
-
-            if is_legal_move(commands[2]) == False:
-                return False
-
-            if is_legal_position(commands[3]) == False:
-                return False
+            del commands[3:]
+            for i in range(3):
+                if is_legal(commands[i-1]) == True:
+                    continue
+                else:
+                    return False
         
         return commands
     
 
-def is_legal_position(command):
-    for i in range(64):
+def is_legal(command):
+    for i in range(70):
         if command == chess_positions[i-1]:
-            return True
-    return False
-    
-def is_legal_move(command):
-    for i in range(6):
-        if command == chess_move[i-1]:
             return True
     return False
     
