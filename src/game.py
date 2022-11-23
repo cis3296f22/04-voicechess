@@ -66,8 +66,12 @@ class Game:
         from_square: Square = self.board[from_col][from_row]
         to_square: Square = self.board[to_col][to_row]
 
+
         if not from_square.has_piece():
             return(f"THERE IS NO PIECE AT {from_square_str}")
+
+        if from_square.piece.color != self.turn:
+            return(f"wrong color/turn")
 
         if to_square.position not in from_square.piece.possible_moves(self.board):
             return(f"Piece on {from_square_str} can't move to {to_square_str}")
@@ -77,9 +81,9 @@ class Game:
         self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
         pg.mixer.music.play()
 
-        
-        self.draw_game
         self.add_pieces
+        self.draw_game
+        pg.display.flip()
         return f"Moved from {from_square_str} to {to_square_str} "
 
         
@@ -186,7 +190,8 @@ class Game:
                 if command == False:
                     print("command not recognized")
                 else:
-                    self.play_move_voice(command)
+                    voicemove = self.play_move_voice(command)
+                    print(voicemove)
                 self.recording = False
                 print("done listening")
                 self.listeningResponse = "not recording"
@@ -246,3 +251,7 @@ class Game:
                     moving_piece = None
                 self.add_pieces()
                 pg.display.flip()
+            
+           
+            
+            
