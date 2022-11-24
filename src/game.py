@@ -195,8 +195,8 @@ class Game:
                 self.recording = False
                 print("done listening")
                 self.listeningResponse = "not recording"
-                command = speak_to_move
-
+                self.draw_game()
+                
             for ev in pg.event.get():
                 if ev.type == pg.QUIT:
                     self.running = False
@@ -251,7 +251,3 @@ class Game:
                     moving_piece = None
                 self.add_pieces()
                 pg.display.flip()
-            
-           
-            
-            
