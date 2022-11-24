@@ -1,7 +1,7 @@
-from piece import Piece
 
 
 class Square:
+
     def __init__(self, row: int, col: int, rect=None, piece=None):
         self.containsPiece =  piece != None
         self.piece = piece
@@ -9,14 +9,12 @@ class Square:
         self.row = row
         self.position = (row,col)
         self.rect = rect
-    def set_piece(self, piece: Piece):
+        
+    def set_piece(self, piece):
         if not piece:
             return
         self.piece = piece
         self.containsPiece = True
     
     def has_piece(self):
-        return self.containsPiece
-
-
-
+        return self.piece != None

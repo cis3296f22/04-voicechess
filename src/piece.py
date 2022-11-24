@@ -1,8 +1,14 @@
 from enum import Enum
 from typing import Tuple
-from typing_extensions import Self
-import pygame as pg
 
+from square import Square
+def get_color_moves(board, color):
+    all_oposite_moves = []
+    for i in range(8):
+        for j in range(8):
+            if board[i][j].has_piece() and board[i][j].piece.color == color:
+                all_oposite_moves.append( board[i][j].piece.possible_moves(board))
+    return all_oposite_moves
 
 class PieceType (Enum):
     Rook = 0,
@@ -19,7 +25,7 @@ class PieceColor(Enum):
 
 
 class Piece:
-    def __init__(self, color: PieceColor, piece_type: PieceType, position: Tuple['int'],  rect=None) -> Self:
+    def __init__(self, color: PieceColor, piece_type: PieceType, position: Tuple['int'],  rect=None) -> None:
         self.color = color
         self.piece_type = piece_type
         self.short_annotation = "w" if self.color == PieceColor.White else "b"
@@ -67,51 +73,50 @@ class Piece:
 
         return p
 
-    def possible_moves(self, board):
+    def possible_moves(self, board, should_filter=True):
+        moves = []
         match self.piece_type:
             case PieceType.Pawn:
-                return self.__get_pawn_moves( board)
+                moves = self.__get_pawn_moves(board)
             case PieceType.Queen:
-                return self.__get_queen_moves(board)
+                moves = self.__get_queen_moves(board)
             case PieceType.King:
-                return self.__get_king_moves(board)
+                moves = self.__get_king_moves(board)
             case PieceType.Rook:
-                return self.__get_rook_moves(board)
+                moves = self.__get_rook_moves(board)
             case PieceType.Knight:
-                return self.__get_knight_moves( board)
+                moves = self.__get_knight_moves(board)
             case PieceType.Bishop:
-                return self.__get_bishop_moves( board)
+                moves = self.__get_bishop_moves(board)
 
-    
+        return self.__filter_moves_that_put_king_in_check__(moves, board) if should_filter else moves
+
     def __get_pawn_moves(self, board):
         (row, col) = self.position
         all_posible = []
         eat_moves = []
         res = []
-        
 
         if self.color == PieceColor.Black:
-            all_posible = [( row, col +1)]
-            eat_moves = [ ( row -1, col +1), (row +1, col +1)]
+            all_posible = [(row, col + 1)]
+            eat_moves = [(row - 1, col + 1), (row + 1, col + 1)]
             if self.position[1] == 1:
-                all_posible.append((row , col +2))
+                all_posible.append((row, col + 2))
 
         else:
-            all_posible = [( row, col -1)]
-            eat_moves = [ ( row +1, col -1), (row -1, col -1)]
+            all_posible = [(row, col - 1)]
+            eat_moves = [(row + 1, col - 1), (row - 1, col - 1)]
             if self.position[1] == 6:
-                all_posible.append((row , col -2))
-            
+                all_posible.append((row, col - 2))
+
         for move in eat_moves:
-            (r,c ) = move
+            (r, c) = move
             if r not in range(0, 8) or c not in range(0, 8):
                 continue
             sqr = board[r][c]
-        
-            if sqr.has_piece() and sqr.piece.color != self.color :
-                res.append( move)
-            
 
+            if sqr.has_piece() and sqr.piece.color != self.color:
+                res.append(move)
 
         for move in all_posible:
             (row, col) = move
@@ -121,13 +126,12 @@ class Piece:
 
             sqr = board[row][col]
             if sqr.has_piece():
-               continue
+                continue
             else:
                 res.append(move)
 
-
         return res
-   
+
     def __get_rook_moves(self, board):
         axes = [
             (1,  0),
@@ -139,10 +143,10 @@ class Piece:
         (row, col) = self.position
 
         for ax in axes:
-            new_row = row +  ax[0]
+            new_row = row + ax[0]
             new_col = col + ax[1]
             while new_row in range(0, 8) and new_col in range(0, 8):
-                sqr = board[new_row][new_col ] 
+                sqr = board[new_row][new_col]
                 if sqr.has_piece():
                     if sqr.piece.color == self.color:
                         break
@@ -153,7 +157,7 @@ class Piece:
                     res.append((new_row, new_col))
                 new_row += ax[0]
                 new_col += ax[1]
-               
+
         return res
 
     def __get_bishop_moves(self, board):
@@ -167,10 +171,10 @@ class Piece:
         (row, col) = self.position
 
         for ax in axes:
-            new_row = row +  ax[0]
+            new_row = row + ax[0]
             new_col = col + ax[1]
             while new_row in range(0, 8) and new_col in range(0, 8):
-                sqr = board[new_row][new_col ] 
+                sqr = board[new_row][new_col]
                 if sqr.has_piece():
                     if sqr.piece.color == self.color:
                         break
@@ -181,7 +185,7 @@ class Piece:
                     res.append((new_row, new_col))
                 new_row += ax[0]
                 new_col += ax[1]
-               
+
         return res
 
     def __get_knight_moves(self, board):
@@ -216,11 +220,10 @@ class Piece:
     def __get_king_moves(self, board):
         (row, col) = self.position
 
-
-        all_possible_moves =[ 
-            (row + 1, col +1), (row +1, col), (row +1, col -1),
-            (row, col +1), (row , col -1 ), 
-            (row -1, col -1 ), (row -1, col ), (row -1, col +1)
+        all_possible_moves = [
+            (row + 1, col + 1), (row + 1, col), (row + 1, col - 1),
+            (row, col + 1), (row, col - 1),
+            (row - 1, col - 1), (row - 1, col), (row - 1, col + 1)
         ]
         res = []
         for move in all_possible_moves:
@@ -237,8 +240,73 @@ class Piece:
                     res.append(move)
             else:
                 res.append(move)
+        # get all opposite move to check if the square we are going to does not put us in check
 
-        return res
         
+        return res
+
     def __get_queen_moves(self, board):
         return self.__get_bishop_moves(board) + self.__get_rook_moves(board)
+
+    def __copy_board__(self, board):
+        new_board = [[ "  " for _ in range(8) ] for _ in range(8)]
+        for i in range(8):
+            for j in range(8):
+                new_board[i][j] = Square(i, j, None, board[i][j].piece)
+        return new_board
+
+    def __filter_moves_that_put_king_in_check__(self, moves, board):
+
+        opposite_color = PieceColor.Black if self.color == PieceColor.White else PieceColor.White
+
+        opposite_color_pieces = []
+        my_pieces = []
+        my_king = ""
+        
+
+        for i in range(8):
+            for j in range(8):
+                if board[i][j].has_piece():
+                    if board[i][j].piece.color == opposite_color:
+                        opposite_color_pieces.append(board[i][j].piece)
+                    else:
+                        if board[i][j].piece.piece_type == PieceType.King:
+                            my_king = board[i][j].piece
+                        my_pieces.append(board[i][j].piece)
+                    
+
+        res = []
+
+        # find out if piece is blocking a check
+        # find out if piece is 
+
+        for move in moves:
+            (r,c) = move
+            new_board = self.__copy_board__(board)
+
+            # makes move
+            new_board[self.position[0]][self.position[1]].piece = None
+            new_board[r][c].piece = self
+
+            should_break = False
+
+
+            # for each piece the opponent has
+            for op_piece in opposite_color_pieces:
+                # print(f"checking {op_piece.short_annotation}")
+                if should_break:
+                    break
+                # for every possible move that piece has check if that move touches our king
+                for poss_move in op_piece.possible_moves(new_board, False):
+                    if self.piece_type == PieceType.King:
+                        if move == poss_move:
+                            should_break = True
+                            break
+                    if poss_move == my_king.position and op_piece.position not in self.possible_moves(board, False):
+                        should_break = True
+                        break
+            
+            if not should_break:
+                res.append(move)
+
+        return res

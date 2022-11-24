@@ -30,5 +30,5 @@ Make a PR
 pip install SpeechRecognition pygame 
 ```
 - The SpeechRecognition package provides the speech recognition 
-- The chess package allows us to create the chess board
+- The pygame package provides the  
 

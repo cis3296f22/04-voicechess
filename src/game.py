@@ -9,55 +9,22 @@ import speech_recognition as sr
 
 import re
 class Game:
+
    
-
-    
-    def play_move(self, move:str):
-       
-        matches = re.findall('[a-zA-Z][0-8]', move)
-        if len(matches) != 2:
-            return(f"Don't Understand! You said '{move}'" )
-
-            
-        alphabet = 'abcdefgh'
-
-
-        from_col = alphabet.index( matches[0][0].lower()) 
-        from_row = int(matches[0][1]) 
-
-        to_col = alphabet.index( matches[1][0].lower()) 
-        to_row = int(matches[1][1]) 
-
-        from_square: Square = self.board[from_col][from_row]
-        to_square: Square = self.board[to_col][to_row]
-
-        if not from_square.has_piece():
-            return(f"THERE IS NO PIECE AT {matches[0]}")
-
-        if to_square.position not in from_square.piece.possible_moves(self.board):
-            return(f"Piece on {matches[0]} can't move to {matches[1]}")
-        
-        self.position[from_row][from_col] = "  "
-        self.position[to_row][to_col] = from_square.piece.short_annotation
-        self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
-        pg.mixer.music.play()
-
-        
-        self.add_pieces()
-        self.draw_game()
-        return f"Moved from {matches[0]} to {matches[1]} "
-
         
         
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode((800,600))
-        self.dark_square_color = (100,100,100)
-        self.light_square_color = (255, 255, 255)
-       
-        self.listeningResponse: str = "Not listening"
+        self.dark_square_color = "#769656"
+        self.black_king: Square
+        self.white_king: Square
+        self.light_square_color = "#EEEED2"
+        self.is_white_king_in_check = False
+        self.is_black_king_in_check = False
         self.turn = PieceColor.White
         self.listening = False
+        self.checking_piece: Piece
         self.board: List['Square']
         self.position = [
             ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
@@ -70,14 +37,123 @@ class Game:
             ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],
         ]
         self.running = True
+    def play_move(self, from_to:List):
+        
+        
+            from_square_str = from_to[0]
+            to_square_str = from_to[1]
+                
+            alphabet = 'abcdefgh'
 
+            from_col =  alphabet.index( from_square_str[0].lower()) 
+            from_row = 8 -   int(from_square_str[1]) 
+
+            to_col =  alphabet.index( to_square_str[0].lower()) 
+            to_row = 8 - int(to_square_str[1]) 
+
+
+            print(f"from: {(from_col, from_row)} -> to: {(to_row, to_col)}, ")
+
+            from_square: Square = self.board[from_col][from_row]
+            to_square: Square = self.board[to_col][to_row]
+
+            if not from_square.has_piece():
+                return(f"THERE IS NO PIECE AT {from_square_str}")
+
+            if to_square.position not in from_square.piece.possible_moves(self.board):
+                return(f"Piece on {from_square_str} can't move to {to_square_str}")
+            
+            self.position[from_row][from_col] = "  "
+            self.position[to_row][to_col] = from_square.piece.short_annotation
+            self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
+            pg.mixer.music.play()
+
+        
+
+            return f"Moved from {from_square_str} to {to_square_str} "
+
+    def play_game_from_file(self, file):
+        with open(file, "r") as f:
+            for line in f.readlines():
+                move = line.split(" ")
+                print(self.play_move(move))
+                self.draw_game()
+                self.add_pieces()
+            
 
     def start(self):
         pg.mixer.music.load("sound.mp3")
         self.draw_game()
         self.add_pieces()
+
+        
+
+        
         pg.display.flip()
         self.main()
+        # self.play_game_from_file('./src/game.txt')
+
+    def get_color_pieces(self, color: PieceColor):
+        pieces = []
+        for i in range(8):
+            for j in range(8):
+                if self.board[i][j].has_piece() and self.board[i][j].piece.color == color:
+                    pieces.append(self.board[i][j].piece)
+
+        return pieces
+
+    def get_color_moves(self, color: PieceColor):
+        moves = []
+        for i in range(8):
+            for j in range(8):
+                if self.board[i][j].has_piece() and self.board[i][j].piece.color == color:
+                    moves.append( self.board[i][j].piece.possible_moves(self.board))
+        return moves
+
+
+              
+    def is_check_mate(self, king_in_check):
+        moves = self.get_color_moves(king_in_check.piece.color) 
+        return not any( moves )
+
+    def update_check_status(self):
+        kings = [self.white_king, self.black_king]
+      
+        for king in kings:
+            all_oposite_moves = self.get_color_moves(PieceColor.Black if king.piece.color == PieceColor.White else PieceColor.White)
+
+            did_break = False
+            for piece_possible_moves in all_oposite_moves:
+                if did_break:
+                    break
+                for move in piece_possible_moves:
+                    
+                    if move == king.piece.position:
+                        pg.draw.rect(self.screen, (255,0,0), king, 5)
+                        # self.checking_piece = piece
+                        if king.piece.color == PieceColor.Black:
+                            self.is_black_king_in_check = True
+                            print("BLACK KING IN CHECK")
+                            did_break = True
+                            if self.is_check_mate(self.black_king):
+                                self.running = False
+                            break
+                        else:
+                            self.is_white_king_in_check = True
+                            did_break = True
+                            print("White KING IN CHECK")
+                            if self.is_check_mate(self.white_king):
+                                self.running = False
+                            break
+            if  did_break == False:
+                if king.piece.color == PieceColor.Black:
+                    self.is_black_king_in_check = False
+                else:
+                    self.is_white_king_in_check = False
+
+                        
+
+                    
 
     def draw_game(self):
         # PAINT THE ENTIRE SCREEN BLACK
@@ -85,16 +161,11 @@ class Game:
         
 
         # RENDERS TURN TEXT
-        font = pg.font.SysFont('Monospace', 24)
+        font = pg.font.get_default_font()
+        font = pg.font.SysFont(font, 26)
         turn_str = "White's Turn" if self.turn == PieceColor.White else "Black's Turn" 
         text = font.render(turn_str,False, (255,255,255))
         self.screen.blit(text, (620,300))
-
-
-        # RENDERS LISTENING TEXT
-        turn_str = self.listeningResponse 
-        text = font.render(turn_str,False, (0,255,0))
-        self.screen.blit(text, (610,500))
 
 
         self.board = [[ "  " for _ in range(8) ] for _ in range(8)]
@@ -107,9 +178,7 @@ class Game:
                     color = self.dark_square_color
                 self.board[i][j] = Square( i,j, pg.draw.rect(self.screen, color, [i * 75, j*75, 75, 75]))
 
-    
-    # def print_position(self):
-    #     print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in self.position]))
+
 
     def add_pieces(self, pos=None):
         # TODO: position reading
@@ -119,9 +188,14 @@ class Game:
         for i in range(8):
             for j in range(8):
                 if self.position[i][j].strip():
+                  
                     self.board[j][i].set_piece(
                         Piece.from_short_anotation( self.position[i][j], (j,i))
                     )
+                    if self.position[i][j] == "wk":
+                        self.white_king = self.board[j][i]
+                    elif self.position[i][j] == "bk":
+                        self.black_king = self.board[j][i]
         self.draw_pieces()
 
     def draw_pieces(self):
@@ -140,7 +214,11 @@ class Game:
 
     def main(self):
         moving_piece = None
+
+        
+
         while self.running:
+           
             for ev in pg.event.get():
                 if ev.type == pg.QUIT:
                     self.running = False
@@ -153,27 +231,30 @@ class Game:
                             break
                         for j in range(8):
                             sqr = self.board[i][j]
-
+                         
                             if sqr.rect.collidepoint(ev.pos) and sqr.has_piece() and sqr.piece.color == self.turn  :
-                                print(sqr.position)
-                                pg.draw.rect(self.screen, (255,0,0), sqr, 5)
+                                
+                                pg.draw.rect(self.screen, (255,255,0), sqr, 5)
                                 moving_piece = sqr.piece
                                 should_break = True
                                 moves = moving_piece.possible_moves(self.board)
+
                                 for move in moves:
                                     (r,c) = move
                                     possible_move_sqr = self.board[r][c]
-                                    pg.draw.circle(self.screen, (0,150,0), possible_move_sqr.rect.center, 10)
+                                    pg.draw.circle(self.screen, (150,150,150), possible_move_sqr.rect.center, 10)
                                 break
+                                
+                        
                 elif ev.type == pg.MOUSEMOTION and moving_piece:
-                    moving_piece.rect.move_ip(ev.rel)
                     self.draw_game()
+                    moving_piece.rect.move_ip(ev.rel)
                     self.screen.blit(moving_piece.blit_image, moving_piece.rect)
+
                 elif ev.type == pg.MOUSEBUTTONUP:
-                    
-                                    
                     should_break = False
                     for i in range(8):
+
                         if should_break:
                             break
                         for j in range(8):
@@ -186,16 +267,16 @@ class Game:
                                 self.position[j][i] = moving_piece.short_annotation
                                 (y,z) = moving_piece.position
                                 self.position[z][y] = "  "
-                                
                                 pg.mixer.music.play()
                                 should_break = True
+                                
                                 self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
                                 self.draw_game()
+                                self.add_pieces()
+                                self.update_check_status()
                                 break
                     moving_piece = None
-                self.add_pieces()
-                pg.display.flip()
+
+            self.add_pieces()
             
-           
-            
-            
+            pg.display.update()
