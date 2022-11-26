@@ -1,7 +1,7 @@
 # Chess With Voice Recognition
  This is a simple chess game that can be played with one’s voice. For example, looking at the two images provided below a player will be able to say g1 – f3. This will select the knight located at g1 and move it to f3. Then the opponent will let the application know they are ready to do their turn and tell which piece to move and where to move it.
 
-![chess board](images/chess_game.png)
+![chess board](images/chess_board.png)
 
 # Project Structure
 - the `documents` folder will contain all the documents required for assigments: project proposal, Vision paper, Personas paper
