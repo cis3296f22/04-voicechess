@@ -25,8 +25,16 @@ def speak_to_move():
             print(result)
             commands = result.split()
             
+            size = len(commands)
             print(commands)
+            if size < 2:
+                return False
+
             del commands[3:]
+            if size == 3:
+                del commands[1]
+            print(commands)
+
             for i in range(3):
                 if is_legal(commands[i-1]) == True:
                     continue
@@ -41,4 +49,3 @@ def is_legal(command):
         if command == chess_positions[i-1]:
             return True
     return False
-    
