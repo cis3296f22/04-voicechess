@@ -16,17 +16,26 @@ def speak_to_move():
         
         with mic as source:
             r.adjust_for_ambient_noise(source)
-            audio = r.listen(source)
-            if ValueError:
+            try:
+                audio = r.listen(source)
+            except ValueError:
+                print("Please say it again")
+                audio = r.listen(source)
+            except IndexError:
                 print("Please say it again")
                 audio = r.listen(source)
             result = r.recognize_google(audio)
             
             print(result)
             commands = result.split()
-            
-            print(commands)
+
+            if len(commands) < 2:
+                return False
+
+            del commands[1]
             del commands[3:]
+            print(commands)
+
             for i in range(3):
                 if is_legal(commands[i-1]) == True:
                     continue

@@ -2,7 +2,7 @@ import threading
 from time import sleep
 from typing import List
 import pygame as pg
-from piece import Piece, PieceColor
+from piece import Piece, PieceColor, PieceType
 from square import Square
 import speech_recognition as sr
 import button
@@ -79,7 +79,7 @@ class Game:
         self.position[from_row][from_col] = "  "
         self.position[to_row][to_col] = from_square.piece.short_annotation
         self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
-        pg.mixer.music.play()
+        #pg.mixer.music.play()
 
         self.add_pieces
         self.draw_game
@@ -114,7 +114,7 @@ class Game:
 
 
     def start(self):
-        pg.mixer.music.load("sound.mp3")
+        #pg.mixer.music.load("sound.mp3")
         self.draw_game()
         self.add_pieces()
         pg.display.flip()
@@ -154,15 +154,20 @@ class Game:
 
     def add_pieces(self, pos=None):
         # TODO: position reading
+        king = 0
+
         if pos:
             return
 
         for i in range(8):
             for j in range(8):
                 if self.position[i][j].strip():
+                    if PieceType == 3:
+                        print("king")
                     self.board[j][i].set_piece(
                         Piece.from_short_anotation( self.position[i][j], (j,i))
                     )
+
         self.draw_pieces()
 
     def draw_pieces(self):
@@ -225,7 +230,9 @@ class Game:
                     moving_piece.rect.move_ip(ev.rel)
                     self.draw_game()
                     self.screen.blit(moving_piece.blit_image, moving_piece.rect)
+                    
                 elif ev.type == pg.MOUSEBUTTONUP:
+                    
                     
                                     
                     should_break = False
@@ -242,8 +249,8 @@ class Game:
                                 self.position[j][i] = moving_piece.short_annotation
                                 (y,z) = moving_piece.position
                                 self.position[z][y] = "  "
-                                
-                                pg.mixer.music.play()
+
+                                #pg.mixer.music.play()
                                 should_break = True
                                 self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
                                 self.draw_game()
@@ -251,3 +258,6 @@ class Game:
                     moving_piece = None
                 self.add_pieces()
                 pg.display.flip()
+
+        
+        
