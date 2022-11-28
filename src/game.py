@@ -251,3 +251,7 @@ class Game:
                     moving_piece = None
                 self.add_pieces()
                 pg.display.flip()
+            
+           
+            
+            

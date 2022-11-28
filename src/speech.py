@@ -49,3 +49,4 @@ def is_legal(command):
         if command == chess_positions[i-1]:
             return True
     return False
+    
