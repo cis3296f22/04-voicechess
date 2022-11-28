@@ -5,13 +5,11 @@ import pygame as pg
 from piece import Piece, PieceColor
 from square import Square
 import speech_recognition as sr
-
-
-import re
+from speech import speak_to_move
+import button
 class Game:
 
    
-        
         
     def __init__(self):
         pg.init()
@@ -22,6 +20,7 @@ class Game:
         self.light_square_color = "#EEEED2"
         self.is_white_king_in_check = False
         self.is_black_king_in_check = False
+        self.listeningResponse: str = "Not listening"
         self.turn = PieceColor.White
         self.listening = False
         self.checking_piece: Piece
@@ -37,6 +36,48 @@ class Game:
             ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],
         ]
         self.running = True
+        self.record_img = pg.image.load('images/button/rec.png').convert_alpha()
+        self.record_button = button.Button(650, 400, self.record_img, 0.2)
+        self.recording = False
+
+
+    def play_move_voice(self, from_to:List):
+        from_square_str = from_to[0]
+        to_square_str = from_to[1]
+            
+        alphabet = 'abcdefgh'
+
+        from_col =  alphabet.index( from_square_str[0].lower()) 
+        from_row = 8 -   int(from_square_str[1]) 
+
+        to_col =  alphabet.index( to_square_str[0].lower()) 
+        to_row = 8 - int(to_square_str[1]) 
+
+
+        print(f"from: {(from_col, from_row)} -> to: {(to_row, to_col)}, ")
+
+        from_square: Square = self.board[from_col][from_row]
+        to_square: Square = self.board[to_col][to_row]
+
+
+        if not from_square.has_piece():
+            return(f"THERE IS NO PIECE AT {from_square_str}")
+
+        if from_square.piece.color != self.turn:
+            return(f"wrong color/turn")
+
+        if to_square.position not in from_square.piece.possible_moves(self.board):
+            return(f"Piece on {from_square_str} can't move to {to_square_str}")
+        
+        self.position[from_row][from_col] = "  "
+        self.position[to_row][to_col] = from_square.piece.short_annotation
+        self.turn = PieceColor.Black if self.turn == PieceColor.White else PieceColor.White
+        pg.mixer.music.play()
+
+        self.add_pieces
+        self.draw_game
+        pg.display.flip()
+        return f"Moved from {from_square_str} to {to_square_str} "
     def play_move(self, from_to:List):
         
         
@@ -72,23 +113,10 @@ class Game:
 
             return f"Moved from {from_square_str} to {to_square_str} "
 
-    def play_game_from_file(self, file):
-        with open(file, "r") as f:
-            for line in f.readlines():
-                move = line.split(" ")
-                print(self.play_move(move))
-                self.draw_game()
-                self.add_pieces()
-            
-
     def start(self):
         pg.mixer.music.load("sound.mp3")
         self.draw_game()
         self.add_pieces()
-
-        
-
-        
         pg.display.flip()
         self.main()
         # self.play_game_from_file('./src/game.txt')
@@ -109,7 +137,6 @@ class Game:
                 if self.board[i][j].has_piece() and self.board[i][j].piece.color == color:
                     moves.append( self.board[i][j].piece.possible_moves(self.board))
         return moves
-
 
               
     def is_check_mate(self, king_in_check):
@@ -151,10 +178,6 @@ class Game:
                 else:
                     self.is_white_king_in_check = False
 
-                        
-
-                    
-
     def draw_game(self):
         # PAINT THE ENTIRE SCREEN BLACK
         self.screen.fill((0,0,0))
@@ -167,6 +190,10 @@ class Game:
         text = font.render(turn_str,False, (255,255,255))
         self.screen.blit(text, (620,300))
 
+           # RENDERS LISTENING TEXT
+        turn_str = self.listeningResponse 
+        text = font.render(turn_str,False, (0,255,0))
+        self.screen.blit(text, (610,500))
 
         self.board = [[ "  " for _ in range(8) ] for _ in range(8)]
 
@@ -215,10 +242,22 @@ class Game:
     def main(self):
         moving_piece = None
 
-        
 
         while self.running:
-           
+            if self.record_button.draw(self.screen):
+                self.recording = True
+                print("Listening")
+                self.listeningResponse = "recording"
+                command = speak_to_move()
+                if command == False:
+                    print("command not recognized")
+                else:
+                    voicemove = self.play_move_voice(command)
+                    print(voicemove)
+                self.recording = False
+                print("done listening")
+                self.listeningResponse = "not recording"
+                self.draw_game()
             for ev in pg.event.get():
                 if ev.type == pg.QUIT:
                     self.running = False
@@ -278,5 +317,4 @@ class Game:
                     moving_piece = None
 
             self.add_pieces()
-            
             pg.display.update()
