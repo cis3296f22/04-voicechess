@@ -28,11 +28,14 @@ def speak_to_move():
             
             print(result)
             commands = result.split()
+            size = len(commands)
 
-            if len(commands) < 2:
+            if size < 2:
                 return False
+            
+            if size == 3:
+                del commands[1]
 
-            del commands[1]
             del commands[3:]
             print(commands)
 
