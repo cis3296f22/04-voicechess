@@ -27,7 +27,9 @@ def speak_to_move():
             result = r.recognize_google(audio)
             
             print(result)
-            commands = result.split()
+            caps = result.upper()
+            commands = caps.split()
+    
             size = len(commands)
 
             if size < 2:
