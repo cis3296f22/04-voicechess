@@ -1,8 +1,7 @@
 import unittest
-from typing import List
-
 import piece
 import square
+from typing import List
 
 
 def test_initial_pawn_moves():
@@ -106,7 +105,7 @@ def test_rook_moves():
     # White rook moves either vertically or horizontally until it faces an obstacle
     # can_eat (7, 1)
     # can_move (7, 6), (7, 5), (7, 4), (7, 3), (7, 2)
-    expected_answer = [ (7, 1), (7, 6), (7, 5), (7, 4), (7, 3), (7, 2)]
+    expected_answer = [(7, 1), (7, 6), (7, 5), (7, 4), (7, 3), (7, 2)]
 
     # Check possible moves for white rook located at (7,7)
     assert set(moving_piece.possible_moves(board)) == set(expected_answer)
@@ -192,8 +191,8 @@ def test_king_moves():
     position = [
         ["br", "bn", "  ", "bq", "bk", "bb", "bn", "br"],
         ["bp", "bp", "  ", "  ", "bp", "  ", "bp", "bp"],
-        ["  ", "  ", "  ", "bp", "  ", "bp", "  ", "  "],
-        ["  ", "  ", "bp", "  ", "  ", "bb", "  ", "  "],
+        ["  ", "  ", "bp", "bp", "  ", "bp", "  ", "  "],
+        ["  ", "  ", "  ", "  ", "  ", "bb", "  ", "  "],
         ["  ", "wp", "  ", "  ", "wp", "  ", "wn", "  "],
         ["  ", "  ", "  ", "  ", "wk", "  ", "  ", "  "],  # testing moves of wk at (4,5)
         ["wp", "  ", "wp", "wp", "  ", "wp", "wp", "  "],
@@ -257,6 +256,79 @@ def test_queen_moves():
     expected_answer = [(4, 4), (0, 6), (3, 6), (5, 1), (2, 2), (4, 2), (4, 3), (2, 4), (3, 4), (1, 5), (3, 5)]
 
     # Check possible moves for black queen located at (3,3)
+    assert set(moving_piece.possible_moves(board)) == set(expected_answer)
+
+
+def test_king_avoids_getting_in_checkmate():
+    # Set up board
+    board: List['square.Square']
+    position = [
+        ["br", "bn", "  ", "bq", "bk", "bb", "bn", "br"],
+        ["bp", "bp", "  ", "  ", "bp", "  ", "bp", "bp"],
+        ["  ", "  ", "  ", "bp", "  ", "bp", "  ", "  "],
+        ["  ", "  ", "bp", "  ", "  ", "bb", "  ", "  "],
+        ["  ", "wp", "  ", "  ", "wp", "  ", "wn", "  "],
+        ["  ", "  ", "  ", "  ", "wk", "  ", "  ", "  "],  # testing moves of wk at (4,5)
+        ["wp", "  ", "wp", "wp", "  ", "wp", "wp", "  "],
+        ["wr", "wn", "wb", "wq", "  ", "wb", "  ", "wr"],
+    ]
+    board = [["  " for _ in range(8)] for _ in range(8)]
+    for i in range(8):
+        for j in range(8):
+            board[i][j] = square.Square(i, j)
+
+    for i in range(8):
+        for j in range(8):
+            if position[i][j].strip():
+                board[j][i].set_piece(
+                    piece.Piece.from_short_anotation(position[i][j], (j, i))
+                )
+
+    # Set up piece to move
+    moving_piece = piece.Piece(color=piece.PieceColor.White, piece_type=piece.PieceType.King, position=(4, 5))
+
+    # White king moves one step in all directions
+    # Initially, wk can_move (3, 4), (5, 5), (3, 5), (4, 6), (5, 4)
+    # But wk can_be_checked if it moves to (3, 4) so we can't move to that positions
+    expected_answer = [(3, 5), (4, 6), (5, 5), (5, 4)]
+
+    # Check possible moves for white king located at (4,5)
+    assert set(moving_piece.possible_moves(board)) == set(expected_answer)
+
+
+def test_pawn_can_cover_check():
+    # Set up board
+    board: List['square.Square']
+    position = [
+        ["br", "bn", "bb", "  ", "bk", "bb", "bn", "br"],
+        ["bp", "bp", "bp", "bp", "  ", "bp", "bp", "bp"],
+        ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "],
+        ["  ", "  ", "  ", "  ", "bq", "  ", "  ", "  "],
+        ["  ", "  ", "  ", "  ", "  ", "  ", "  ", "bq"],
+        ["  ", "  ", "  ", "  ", "  ", "wp", "  ", "  "],
+        ["wp", "wp", "wp", "wp", "wp", "  ", "wp", "wp"],
+        ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],  # test pawn move at (6, 6)
+    ]
+    board = [["  " for _ in range(8)] for _ in range(8)]
+    for i in range(8):
+        for j in range(8):
+            board[i][j] = square.Square(i, j)
+
+    for i in range(8):
+        for j in range(8):
+            if position[i][j].strip():
+                board[j][i].set_piece(
+                    piece.Piece.from_short_anotation(position[i][j], (j, i))
+                )
+
+    # Set up piece to move
+    moving_piece = piece.Piece(color=piece.PieceColor.White, piece_type=piece.PieceType.Pawn, position=(6, 6))
+
+    # Pawn can cover check
+    # can_move (6, 5)
+    expected_answer = [(6, 5)]
+
+    # Check possible moves for white pawn located at (6, 6)
     assert set(moving_piece.possible_moves(board)) == set(expected_answer)
 
 
