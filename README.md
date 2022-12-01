@@ -26,7 +26,7 @@ Make a PR
 - To build you are going to need to have python installed
 - You are also going to need to install a couple of python packages which you can do with:
 ```bash
-pip install SpeechRecognition pygame 
+pip install SpeechRecognition pygame pytest
 ```
 
 - The SpeechRecognition package provides the speech recognition 
