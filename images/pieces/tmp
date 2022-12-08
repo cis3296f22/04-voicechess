@@ -1,0 +1,17 @@
+#!/bin/bash
+
+piece="neo"
+
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/wr.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/wn.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/wb.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/wq.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/wk.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/wp.png"
+
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/br.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/bn.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/bb.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/bq.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/bk.png"
+wget "https://www.chess.com/chess-themes/pieces/$piece/150/bp.png"

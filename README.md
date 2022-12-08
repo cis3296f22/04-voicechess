@@ -1,28 +1,34 @@
-# Project Name
-Put here a short paragraph describing your project. 
-Adding an screenshot or a mockup of your application in action would be nice.  
+# Chess With Voice Recognition
+ This is a simple chess game that can be played with one’s voice. For example, looking at the two images provided below a player will be able to say g1 – f3. This will select the knight located at g1 and move it to f3. Then the opponent will let the application know they are ready to do their turn and tell which piece to move and where to move it.
 
-![This is a screenshot.](images.png)
+![chess board](images/chess_board.png)
+
+# Project Structure
+- the `documents` folder will contain all the documents required for assigments: project proposal, Vision paper, Personas paper
+- the `src` folder will contain all the code
+- the `images` folder contains all the piece images
+
+
 # How to run
-Provide here instructions on how to use your application.   
-- Download the latest binary from the Release section on the right on GitHub.  
-- On the command line uncompress using
+To run the project simply clone the project:
+```bash
+git clone https://github.com/cis3296f22/04-voicechess
 ```
-tar -xzf  
+and 
+```bash
+python src/main.py 
 ```
-- On the command line run with
-```
-./hello
-```
-- You will see Hello World! on your terminal. 
 
 # How to contribute
-Follow this project board to know the latest status of the project: [http://...]([http://...])  
+Make a PR
 
-### How to build
-- Use this github repository: ... 
-- Specify what branch to use for a more stable release or for cutting edge development.  
-- Use InteliJ 11
-- Specify additional library to download if needed 
-- What file and target to compile and run. 
-- What is expected to happen when the app start. 
+# How to build
+- To build you are going to need to have python installed
+- You are also going to need to install a couple of python packages which you can do with:
+```bash
+pip install SpeechRecognition pygame pytest
+```
+
+- The SpeechRecognition package provides the speech recognition 
+- The pygame package provides the library for the GUI
+
